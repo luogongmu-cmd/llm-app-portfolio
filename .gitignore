@@ -5,3 +5,4 @@ __pycache__/
 data/corpus/
 eval/runs/
 .chroma/
+.idea/
