@@ -42,7 +42,7 @@ summary = {
     "detail": detail,
 }
 (BASE / "eval/runs").mkdir(parents=True, exist_ok=True)
-out = BASE / "eval/runs/before.json"   # Day4 改成 after.json 再跑一次
+out = BASE / "eval/runs/after.json"   # Day4 改成 after.json 再跑一次
 out.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
 print(json.dumps({k: v for k, v in summary.items() if k != "detail"},
                  ensure_ascii=False, indent=2))
