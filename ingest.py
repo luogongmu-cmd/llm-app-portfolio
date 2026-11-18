@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 load_dotenv()
-CHUNK, OVERLAP = 500, 100          # Day4 会改这里，别今天调
+CHUNK, OVERLAP = 500, 50           # Day4 实验结论：100 更差，已回退到 50
 # chromadb 1.x 要求集合名 3-512 字符、仅 [a-zA-Z0-9._-]；
 # 骨架里的 "kb" 只有 2 字符，会抛 InvalidArgumentError
 COLLECTION = "kb_day2"
