@@ -27,6 +27,9 @@ for path in sorted(glob.glob("data/corpus/*.md")):
     name = os.path.basename(path)
     text = open(path, encoding="utf-8").read()
     for idx, piece in enumerate(chunk(text)):
+        # 评测样例不能进检索库，否则模型会直接复述 cases.jsonl（测试集泄漏）
+        if any(m in piece for m in ('"id":"q', '"expect"', '"multi_chunk"')):
+            continue
         emb = client.embeddings.create(
             model=os.environ["EMBED_MODEL"], input=piece
         ).data[0].embedding

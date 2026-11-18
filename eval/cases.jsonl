@@ -1,0 +1,20 @@
+{"id":"q01","type":"answerable","question":"chunk_size 和 overlap 默认设成多少？","expect":["500","50"],"source":"Day2_手写最小RAG.md"}
+{"id":"q02","type":"answerable","question":"Day3 的 20 条评测集按什么配比？","expect":["10","5","5"],"source":"Day3_建评测集.md"}
+{"id":"q03","type":"answerable","question":"Day5 的工具调用循环最多允许几轮？","expect":["3"],"source":"Day5_工具调用与异常处理.md"}
+{"id":"q04","type":"answerable","question":"Day4 建议把 overlap 从多少改到多少？","expect":["50","100"],"source":"Day4_单次可归因优化.md"}
+{"id":"q05","type":"answerable","question":"容器里检索为空，通常是什么原因？","expect":["chroma"],"source":"Day6_服务化与公网可访问.md"}
+{"id":"q06","type":"answerable","question":"8 周路线图第 7–8 周要求投多少份简历？","expect":["30"],"source":"8周路线图.md"}
+{"id":"q07","type":"answerable","question":"第 1 周起每天大约要投入多少小时？","expect":["2"],"source":"8周路线图.md"}
+{"id":"q08","type":"answerable","question":"Day6 的 Dockerfile 基于哪个 Python 镜像？","expect":["3.11"],"source":"Day6_服务化与公网可访问.md"}
+{"id":"q09","type":"answerable","question":"Day2 的 ingest 在 metadatas 里必须存哪个字段？","expect":["source"],"source":"Day2_手写最小RAG.md"}
+{"id":"q10","type":"answerable","question":"Day1 的 smoke_test.py 要打印哪三行？","expect":["ANSWER","TOKENS","LATENCY"],"source":"Day1_岗位反推与项目骨架.md"}
+{"id":"q11","type":"no_answer","question":"这个项目的月活用户是多少？","expect":["资料中没有"],"source":null}
+{"id":"q12","type":"no_answer","question":"项目拿到了多少融资？","expect":["资料中没有"],"source":null}
+{"id":"q13","type":"no_answer","question":"团队有多少人？","expect":["资料中没有"],"source":null}
+{"id":"q14","type":"no_answer","question":"这个项目的竞品定价是多少？","expect":["资料中没有"],"source":null}
+{"id":"q15","type":"no_answer","question":"用户对系统的满意度评分是多少？","expect":["资料中没有"],"source":null}
+{"id":"q16","type":"multi_chunk","question":"为什么先手写循环再上 LangGraph？","expect":["框架"],"source":"8周路线图.md"}
+{"id":"q17","type":"multi_chunk","question":"Day3 建好评测集后，Day4 要求怎么证明一个改动有效？","expect":["对比"],"source":"Day4_单次可归因优化.md"}
+{"id":"q18","type":"multi_chunk","question":"投 30 份简历 0 面试时，问题应该归因到哪里？","expect":["简历","选题"],"source":"8周路线图.md"}
+{"id":"q19","type":"multi_chunk","question":"为什么 Day2 就要在 metadatas 里存 source？","expect":["source"],"source":"Day2_手写最小RAG.md"}
+{"id":"q20","type":"multi_chunk","question":"Day5 的工具调用循环在 Day6 里是怎么暴露成接口的？","expect":["/chat"],"source":"Day6_服务化与公网可访问.md"}
