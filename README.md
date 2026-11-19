@@ -2,7 +2,7 @@
 
 给一批私有 Markdown 文档，能问答、能拒答、能调用工具，并用一张评测表证明效果。
 
-> 当前进度：Day 3 / 7 —— 最小 RAG 链路 + 20 条评测集已跑通
+> 当前进度：Day 6 / 7 —— 最小 RAG + 评测 + 工具调用 + FastAPI 服务已跑通
 
 ## 两个项目
 
@@ -34,6 +34,17 @@ python query.py
 python smoke_test.py
 ```
 
+### 本机服务（FastAPI）
+
+```bash
+uvicorn app:app --host 127.0.0.1 --port 8000
+# 另开一个终端
+curl http://127.0.0.1:8000/health
+curl -X POST http://127.0.0.1:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"question":"知识库里 chunk_size 默认多少"}'
+```
+
 ## 语料
 
 `data/corpus/` 不进版本库（见 `.gitignore`），请自备 Markdown 文档放进去，例如：
@@ -60,6 +71,44 @@ cp /path/to/your/notes/*.md data/corpus/
 ├── data/corpus/     # 语料（不提交）
 └── .chroma/         # 本地向量库（不提交）
 ```
+
+## 架构
+
+```mermaid
+graph LR
+  U[用户] -->|POST /chat| A[FastAPI app.py]
+  A --> B[agent_loop.run]
+  B -->|tool_calls| C[search_kb / calculator]
+  C --> D[query.search]
+  D --> E[(Chroma .chroma)]
+  B --> F[LLM API]
+```
+
+`/chat` 是同步接口：一次请求会走完「工具调用 → 回灌 → 生成」，复杂问题可能 10–30 秒。
+
+## 部署
+
+### Docker
+
+```bash
+# 本地先建好索引，否则镜像里没有 .chroma
+python ingest.py
+docker build -t kb-agent .
+docker run --rm -p 8000:8000 --env-file .env kb-agent
+curl http://127.0.0.1:8000/health
+```
+
+`.env` 不进镜像（`.dockerignore` 已忽略），运行时用 `--env-file` 注入。
+
+### 三类部署方式（按 15 分钟能出链接挑）
+
+| 方式 | 适合 | 注意 |
+| --- | --- | --- |
+| 内网穿透（本机 uvicorn + 穿透工具） | 最快，无需构建 | 本机关机就失效，README 注明 |
+| 免费容器托管（认 Dockerfile） | 有 Dockerfile 即可 | 首次构建可能超过 15 分钟 |
+| 已有云服务器（docker run） | 手上有机器 | 注意端口与安全组 |
+
+判断标准只有一条：别人能不能打开并问出一个正确答案。
 
 ## 评测
 
@@ -159,6 +208,8 @@ cp /path/to/your/notes/*.md data/corpus/
 - 固定窗口切分（500 / 50），片段不带章节上下文，跨章节问题命中率有限
 - 纯向量检索，对型号、编号等精确串不敏感（Day 4 计划加 BM25 + 重排）
 - 单机 Chroma，未做并发与权限
+- 索引随镜像打包，语料更新需重建镜像
+- 容器里没有 `.chroma/` 时检索为空
 - 仅支持文字版 Markdown
 
 ## License
