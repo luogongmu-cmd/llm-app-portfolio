@@ -18,14 +18,3 @@ def health():
 @app.post("/chat")
 def chat(req: Ask):
     return {"answer": run(req.question)}
-
-
-@app.get("/debug")
-def debug():
-    """临时诊断：确认索引是否可读（验证后删除）。"""
-    import chromadb
-
-    from query import search
-
-    col = chromadb.PersistentClient(path=".chroma").get_or_create_collection("kb_day2")
-    return {"count": col.count(), "hits": search("chunk_size")}
