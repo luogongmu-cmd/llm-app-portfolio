@@ -34,7 +34,8 @@ for path in sorted(glob.glob("data/corpus/*.md")):
         if any(m in piece for m in ('"id":"q', '"expect"', '"multi_chunk"')):
             continue
         emb = client.embeddings.create(
-            model=os.environ["EMBED_MODEL"], input=piece
+            # 文件名注入 embedding：让「Day5」这类编号参与语义匹配（breadcrumb 思路）
+            model=os.environ["EMBED_MODEL"], input=f"{name}\n{piece}"
         ).data[0].embedding
         col.add(
             ids=[f"{name}-{idx}"],
