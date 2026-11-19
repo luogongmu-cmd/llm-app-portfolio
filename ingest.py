@@ -27,6 +27,9 @@ for path in sorted(glob.glob("data/corpus/*.md")):
     name = os.path.basename(path)
     text = open(path, encoding="utf-8").read()
     for idx, piece in enumerate(chunk(text)):
+        # 跳过切分产生的碎片（如单独的 "]"），它们会污染检索
+        if len(piece.strip()) < 50:
+            continue
         # 评测样例不能进检索库，否则模型会直接复述 cases.jsonl（测试集泄漏）
         if any(m in piece for m in ('"id":"q', '"expect"', '"multi_chunk"')):
             continue
