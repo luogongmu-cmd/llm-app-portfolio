@@ -31,9 +31,14 @@ def dispatch(name: str, args: dict):
         q = args.get("query")
         if not q:
             raise ValueError("缺少 query 参数，请提供检索关键词")
-        hits = search(q, k=5)
+        hits = search(q, k=8)
+        # 问题里出现 DayN 时优先该文件的片段：编号类问题纯向量匹配很弱
+        m = re.search(r"Day\s*([1-7])", q, re.I)
+        if m:
+            tag = f"Day{m.group(1)}"
+            hits = [h for h in hits if tag in h["source"]] + [h for h in hits if tag not in h["source"]]
         # 只回灌正文与来源：distance 是给调试看的，传给模型会干扰判断
-        return [{"text": h["text"][:400], "source": h["source"]} for h in hits]
+        return [{"text": h["text"][:400], "source": h["source"]} for h in hits[:5]]
 
     if name == "calculator":
         expr = args.get("expr", "")
