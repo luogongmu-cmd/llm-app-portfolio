@@ -21,7 +21,8 @@ from openai import OpenAI
 from tools import dispatch
 
 load_dotenv()
-client = OpenAI(api_key=os.environ["LLM_API_KEY"], base_url=os.environ["LLM_BASE_URL"])
+client = OpenAI(api_key=os.environ["LLM_API_KEY"], base_url=os.environ["LLM_BASE_URL"],
+               timeout=30, max_retries=1)
 MODEL = os.environ["LLM_MODEL"]
 MAX_ROUNDS = 2
 SEARCH_TIMEOUT = 15

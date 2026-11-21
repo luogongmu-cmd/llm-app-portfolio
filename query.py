@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 load_dotenv()
-client = OpenAI(api_key=os.environ["LLM_API_KEY"], base_url=os.environ["LLM_BASE_URL"])
+client = OpenAI(api_key=os.environ["LLM_API_KEY"], base_url=os.environ["LLM_BASE_URL"],
+               timeout=30, max_retries=1)
 COLLECTION = "kb_day2"  # 必须与 ingest.py 保持一致
 col = chromadb.PersistentClient(path=".chroma").get_or_create_collection(COLLECTION)
 
