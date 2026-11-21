@@ -8,8 +8,8 @@
 
 ## 两个项目
 
-1. 本项目：手写 RAG + 工具调用 + 评测（第 0 周完成）
-2. 带权限边界的业务 Agent（第 3–4 周）
+1. 本项目：手写 RAG + 工具调用 + 评测 —— [GitHub](https://github.com/luogongmu-cmd/llm-app-portfolio) · [Demo](https://llm-app-portfolio.onrender.com)
+2. 带权限边界的企业知识库 Agent —— [GitHub](https://github.com/luogongmu-cmd/kb-acl-agent) · [Demo](https://kb-acl-agent.onrender.com)
 
 ## 技术栈
 
