@@ -13,7 +13,7 @@
 
 ## 技术栈
 
-Python 3.10+ · OpenAI 兼容 API（LLM + Embedding）· Chroma · FastAPI（Day 6）· Docker（Day 6）
+Python 3.10+ · OpenAI 兼容 API · Chroma · LangGraph · FastAPI + Docker
 
 ## 快速开始
 
@@ -43,6 +43,11 @@ uvicorn app:app --host 127.0.0.1 --port 8000
 # 另开一个终端
 curl http://127.0.0.1:8000/health
 curl -X POST http://127.0.0.1:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"question":"知识库里 chunk_size 默认多少"}'
+
+# 流式（SSE，逐节点推送 plan/retrieve/reflect/answer）
+curl -N -X POST http://127.0.0.1:8000/chat/stream \
   -H "Content-Type: application/json" \
   -d '{"question":"知识库里 chunk_size 默认多少"}'
 ```
@@ -79,14 +84,22 @@ cp /path/to/your/notes/*.md data/corpus/
 ```mermaid
 graph LR
   U[用户] -->|POST /chat| A[FastAPI app.py]
-  A --> B[agent_loop.run]
-  B -->|tool_calls| C[search_kb / calculator]
-  C --> D[query.search]
-  D --> E[(Chroma .chroma)]
-  B --> F[LLM API]
+  U -->|POST /chat/stream| S[SSE 逐节点]
+  A --> G[agent_graph: StateGraph]
+  A --> H[agent_loop: 手写版对照]
+  G --> P[plan]
+  P -->|需要检索| R[retrieve]
+  R --> T[search_kb]
+  T --> Q[query.search]
+  Q --> C[(Chroma .chroma)]
+  R --> RF[reflect]
+  RF -->|证据不足| R
+  RF -->|足够| AN[answer]
+  AN --> L[LLM API]
+  S --> G
 ```
 
-`/chat` 是同步接口：一次请求会走完「工具调用 → 回灌 → 生成」，复杂问题可能 10–30 秒。
+`/chat` 走 LangGraph 版（`plan → retrieve → reflect → answer`，条件边 + 15s 检索超时）；`/chat/handwritten` 保留 Day5 的手写循环做对照；`/chat/stream` 用 SSE 逐节点推送，复杂问题可能 10–30 秒。
 
 ## 部署
 
@@ -204,6 +217,18 @@ curl http://127.0.0.1:8000/health
 ```
 
 三类失败都没有 traceback、没有卡死、都说明了发生了什么。
+
+## 第 1–2 周：LangGraph 版
+
+手写循环保留在 `agent_loop.py` 作对照，新链路在 `agent_graph.py`：
+
+- **四个节点**：`plan`（判断是否需要检索）→ `retrieve`（`search_kb`，15s 超时）→ `reflect`（证据是否为空）→ `answer`（拼上下文生成）
+- **条件边**：`route_plan` 决定直接答还是检索；`route_reflect` 在证据不足且未达 2 轮时回到 `retrieve`，否则进入 `answer`
+- **结构化日志**：每个节点输出 JSON（event / round / hits / tokens / ms / error），便于算成本和延迟
+- **流式**：`POST /chat/stream` 用 SSE 推送节点事件，实测序列 `plan → retrieve(5 hits) → reflect → answer`
+- **CI**：`.github/workflows/ci.yml` 提交即跑导入检查 + `check.py`
+
+复盘见 [`docs/retro_langgraph.md`](docs/retro_langgraph.md)。
 
 ## 已知限制
 

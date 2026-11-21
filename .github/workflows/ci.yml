@@ -1,0 +1,28 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      # 只做结构与导入检查，不调用真实 API
+      LLM_API_KEY: dummy
+      LLM_BASE_URL: https://example.com/v1
+      LLM_MODEL: dummy
+      EMBED_MODEL: dummy
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: pip install -r requirements.txt
+      - name: Import check
+        run: python -c "import agent_loop, tools, query, agent_graph, app"
+      - name: Self check
+        run: python check.py
